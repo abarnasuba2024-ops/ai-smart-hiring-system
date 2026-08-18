@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="form-container">
+
+    <h1>Upload Candidate Resume</h1>
+
+    {% if job %}
+    <div class="job-info">
+
+        <h2>
+            {{ job["title"] }}
+        </h2>
+
+        <p>
+            <strong>Required Skills:</strong>
+            {{ job["skills"] or "Not specified" }}
+        </p>
+
+    </div>
+    {% endif %}
+
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+    >
+
+        <label>
+            Select Job
+        </label>
+
+        <select name="job_id" required>
+            <option value="">-- Choose a job --</option>
+            {% for job_item in jobs %}
+                <option value="{{ job_item['id'] }}"
+                    {% if job and job['id'] == job_item['id'] %}selected{% endif %}>
+                    {{ job_item['title'] }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>
+            Candidate Name
+        </label>
+
+        <input
+            type="text"
+            name="name"
+            placeholder="Enter candidate name"
+            required
+        >
+
+
+        <label>
+            Email
+        </label>
+
+        <input
+            type="email"
+            name="email"
+            placeholder="candidate@email.com"
+        >
+
+
+        <label>
+            Phone
+        </label>
+
+        <input
+            type="text"
+            name="phone"
+            placeholder="Phone number"
+        >
+
+
+        <label>
+            Resume PDF
+        </label>
+
+        <input
+            type="file"
+            name="resume"
+            accept=".pdf"
+            required
+        >
+
+        <p class="note">
+            Only PDF resumes are supported.
+        </p>
+
+
+        <button
+            type="submit"
+            class="btn">
+            🤖 Analyze Resume
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

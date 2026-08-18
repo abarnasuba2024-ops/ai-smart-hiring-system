@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            Candidate Ranking
+        </h1>
+
+        <p>
+            Job: <strong>{{ job["title"] }}</strong>
+        </p>
+
+    </div>
+
+    <a
+        href="{{ url_for('upload_resume') }}"
+        class="btn">
+        + Add Candidate
+    </a>
+
+</div>
+
+
+{% if candidates %}
+
+<div class="table-container">
+
+<table>
+
+<thead>
+
+<tr>
+
+    <th>Rank</th>
+    <th>Candidate</th>
+    <th>Email</th>
+    <th>AI Match</th>
+    <th>Recommendation</th>
+    <th>Status</th>
+    <th>Action</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+{% for candidate in candidates %}
+
+<tr>
+
+    <td>
+        <strong>#{{ loop.index }}</strong>
+    </td>
+
+
+    <td>
+        {{ candidate["name"] }}
+    </td>
+
+
+    <td>
+        {{ candidate["email"] or "Not provided" }}
+    </td>
+
+
+    <td>
+
+        <div class="score">
+
+            <div
+                class="score-bar"
+                data-score ="{{ candidate['score'] }}%;">
+            </div>
+ 
+        </div>
+
+        <strong>
+            {{ candidate["score"] }}%
+        </strong>
+
+    </td>
+
+
+    <td>
+
+        {% if candidate["score"] >= 75 %}
+
+            <span class="badge excellent">
+                Highly Recommended
+            </span>
+
+        {% elif candidate["score"] >= 50 %}
+
+            <span class="badge good">
+                Recommended
+            </span>
+
+        {% elif candidate["score"] >= 30 %}
+
+            <span class="badge average">
+                Consider
+            </span>
+
+        {% else %}
+
+            <span class="badge poor">
+                Low Match
+            </span>
+
+        {% endif %}
+
+    </td>
+
+
+    <td>
+
+        {% if candidate["status"] == "Shortlisted" %}
+
+            <span class="badge good">
+                Shortlisted
+            </span>
+
+        {% elif candidate["status"] == "Rejected" %}
+
+            <span class="badge poor">
+                Rejected
+            </span>
+
+        {% else %}
+
+            <span class="badge average">
+                Pending
+            </span>
+
+        {% endif %}
+
+    </td>
+
+
+    <td>
+
+        <a
+            href="{{ url_for(
+                'candidate_detail',
+                candidate_id=candidate['id']
+            ) }}"
+            class="small-btn">
+            View
+        </a>
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% else %}
+
+<div class="empty">
+
+    <h3>No candidates yet.</h3>
+
+    <a
+        href="{{ url_for('upload_resume') }}"
+        class="btn">
+        Upload First Resume
+    </a>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

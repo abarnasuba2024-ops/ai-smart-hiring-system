@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="form-container">
+
+    <h1>Create Job Vacancy</h1>
+
+    <form method="POST">
+
+        <label>
+            Job Title
+        </label>
+
+        <input
+            type="text"
+            name="title"
+            placeholder="Example: Python Developer"
+            required
+        >
+
+
+        <label>
+            Job Description
+        </label>
+
+        <textarea
+            name="description"
+            rows="6"
+            placeholder="Enter job description..."
+            required
+        ></textarea>
+
+
+        <label>
+            Required Skills
+        </label>
+
+        <input
+            type="text"
+            name="skills"
+            placeholder="Python, Machine Learning, SQL, Flask"
+            required
+        >
+
+        <small>
+            Separate skills using commas.
+        </small>
+
+
+        <label>
+            Minimum Experience
+        </label>
+
+        <input
+            type="number"
+            name="experience"
+            min="0"
+            value="0"
+        >
+
+
+        <button
+            type="submit"
+            class="btn">
+            Create Job
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

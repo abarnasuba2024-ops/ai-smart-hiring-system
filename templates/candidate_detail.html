@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="detail-container">
+
+    <h1>
+        Candidate Details
+    </h1>
+
+
+    <div class="candidate-header">
+
+        <div>
+
+            <h2>
+                {{ candidate["name"] }}
+            </h2>
+
+            <p>
+                Applied for:
+                <strong>
+                    {{ candidate["job_title"] }}
+                </strong>
+            </p>
+
+        </div>
+
+
+        <div class="big-score">
+
+            {{ candidate["score"] }}%
+
+            <span>
+                AI Match
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="info-grid">
+
+        <div class="info-box">
+
+            <h3>Email</h3>
+
+            <p>
+                {{ candidate["email"] or "Not provided" }}
+            </p>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <h3>Phone</h3>
+
+            <p>
+                {{ candidate["phone"] or "Not provided" }}
+            </p>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <h3>Status</h3>
+
+            <p>
+                {{ candidate["status"] }}
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+    <h2>AI Resume Analysis</h2>
+
+    <div class="resume-box">
+
+        {{ candidate["resume_text"] }}
+
+    </div>
+
+
+    <div class="actions">
+
+        <form method="POST" action="{{ url_for('update_candidate_status', candidate_id=candidate['id']) }}" style="display:inline;">
+            <input type="hidden" name="status" value="Shortlisted">
+            <button type="submit" class="btn">✓ Shortlist</button>
+        </form>
+
+        <form method="POST" action="{{ url_for('update_candidate_status', candidate_id=candidate['id']) }}" style="display:inline;">
+            <input type="hidden" name="status" value="Rejected">
+            <button type="submit" class="btn danger">✕ Reject</button>
+        </form>
+
+        <form method="POST" action="{{ url_for('update_candidate_status', candidate_id=candidate['id']) }}" style="display:inline;">
+            <input type="hidden" name="status" value="New">
+            <button type="submit" class="btn secondary">Reset</button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

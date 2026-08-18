@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="hero">
+
+    <h1>AI Smart Hiring System</h1>
+
+    <p>
+        Automatically screen resumes and find the best candidates
+        using Artificial Intelligence.
+    </p>
+
+    <a href="{{ url_for('add_job') }}"
+       class="btn">
+        + Create New Job
+    </a>
+
+</div>
+
+
+<h2>Available Jobs</h2>
+
+
+{% if jobs %}
+
+<div class="job-grid">
+
+    {% for job in jobs %}
+
+    <div class="job-card">
+
+        <h3>
+            {{ job["title"] }}
+        </h3>
+
+        <p>
+            {{ job["description"][:150] }}
+            {% if job["description"]|length > 150 %}
+            ...
+            {% endif %}
+        </p>
+
+        <p>
+            <strong>Required Skills:</strong>
+            {{ job["skills"] or "Not specified" }}
+        </p>
+
+        <div class="card-buttons">
+
+            <a class="btn"
+               href="{{ url_for('upload_resume') }}">
+                Upload Resume
+            </a>
+
+            <a class="btn secondary"
+               href="{{ url_for('job_detail', job_id=job['id']) }}">
+                View Candidates
+            </a>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="empty">
+
+    <h3>No jobs available</h3>
+
+    <p>Create your first job vacancy.</p>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
