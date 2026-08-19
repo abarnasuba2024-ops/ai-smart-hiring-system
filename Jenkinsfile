@@ -47,8 +47,8 @@ pipeline {
             steps {
                 echo 'Checking Docker installation...'
 
-                bat '"%DOCKER%" version'
-                bat '"%DOCKER%" info'
+                bat 'docker version'
+                bat 'docker info'
             }
         }
 
