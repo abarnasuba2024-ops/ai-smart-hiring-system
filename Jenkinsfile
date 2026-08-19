@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building AI Smart Hiring System...'
-                bat 'python --version'
+                bat '"C:\\Users\\ELCOT\\AppData\\Local\\Programs\\Python\\Python310\\python.exe" --version'
             }
         }
 
