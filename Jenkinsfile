@@ -1,53 +1,109 @@
 pipeline {
+
     agent any
 
     environment {
-        IMAGE_NAME = "ai-smart-hiring-system"
-        CONTAINER_NAME = "ai-smart-hiring-container"
+        // Python
+        PYTHON = 'C:\\Users\\ELCOT\\AppData\\Local\\Programs\\Python\\Python310\\python.exe'
+
+        // Docker executable
+        DOCKER = 'C:\\Users\\ELCOT\\AppData\\Local\\Programs\\Docker\\DockerDesktop\\resources\\bin\\docker.exe'
+
+        // Docker image name
+        IMAGE_NAME = 'ai-smart-hiring-system'
+
+        // Docker container name
+        CONTAINER_NAME = 'ai-smart-hiring-system-container'
     }
 
     stages {
 
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                echo 'Building AI Smart Hiring System...'
+                echo 'Starting AI Smart Hiring System pipeline...'
+                echo 'Checking workspace...'
 
-                bat '"C:\\Users\\ELCOT\\AppData\\Local\\Programs\\Python\\Python310\\python.exe" --version'
+                bat 'dir'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Python Check') {
             steps {
-                bat 'if exist requirements.txt "C:\\Users\\ELCOT\\AppData\\Local\\Programs\\Python\\Python310\\python.exe" -m pip install -r requirements.txt'
+                echo 'Checking Python installation...'
+
+                bat '"%PYTHON%" --version'
             }
         }
 
-        stage('Test') {
+        stage('Compile Python') {
             steps {
-                bat '"C:\\Users\\ELCOT\\AppData\\Local\\Programs\\Python\\Python310\\python.exe" -m py_compile app.py'
+                echo 'Compiling app.py...'
+
+                bat '"%PYTHON%" -m py_compile app.py'
+            }
+        }
+
+        stage('Docker Check') {
+            steps {
+                echo 'Checking Docker installation...'
+
+                bat '"%DOCKER%" version'
+                bat '"%DOCKER%" info'
             }
         }
 
         stage('Docker Build') {
             steps {
-                bat 'docker build -t %IMAGE_NAME% .'
+                echo 'Building Docker image...'
+
+                bat '"%DOCKER%" build -t %IMAGE_NAME% .'
+            }
+        }
+
+        stage('Docker Stop Existing Container') {
+            steps {
+                echo 'Stopping existing container if it exists...'
+
+                bat '"%DOCKER%" rm -f %CONTAINER_NAME% 2>nul || exit /b 0'
             }
         }
 
         stage('Docker Run') {
             steps {
-                bat 'docker rm -f %CONTAINER_NAME% 2>nul || exit /b 0'
-                bat 'docker run -d --name %CONTAINER_NAME% -p 5000:5000 %IMAGE_NAME%'
+                echo 'Starting Docker container...'
+
+                bat '"%DOCKER%" run -d --name %CONTAINER_NAME% -p 5000:5000 %IMAGE_NAME%'
+            }
+        }
+
+        stage('Docker Status') {
+            steps {
+                echo 'Checking running Docker containers...'
+
+                bat '"%DOCKER%" ps'
             }
         }
     }
 
     post {
+
         success {
-            echo 'AI Smart Hiring System Docker container started successfully!'
+            echo '=============================================='
+            echo 'AI Smart Hiring System deployed successfully!'
+            echo 'Docker container is running.'
+            echo 'Application: http://localhost:5000'
+            echo '=============================================='
         }
+
         failure {
+            echo '=============================================='
             echo 'Build or Docker deployment failed.'
+            echo 'Check the Jenkins Console Output.'
+            echo '=============================================='
+        }
+
+        always {
+            echo 'Jenkins pipeline completed.'
         }
     }
 }
