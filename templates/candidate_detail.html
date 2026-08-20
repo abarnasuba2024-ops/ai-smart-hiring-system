@@ -82,7 +82,11 @@
 
     <div class="resume-box">
 
-        {{ candidate["resume_text"] }}
+        {% if candidate["resume_text"] %}
+            {{ candidate["resume_text"] }}
+        {% else %}
+            <p>No readable text was found in this resume. Upload a text-based PDF, DOCX, or TXT file for AI analysis and matching.</p>
+        {% endif %}
 
     </div>
 

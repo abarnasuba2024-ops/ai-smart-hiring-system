@@ -5,5 +5,8 @@ scikit-learn
 nltk
 spacy
 PyPDF2
+PyMuPDF
+pytesseract
+Pillow
 python-docx
 requests

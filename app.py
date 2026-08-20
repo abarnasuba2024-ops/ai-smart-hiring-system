@@ -18,6 +18,15 @@ try:
 except ImportError:
     PdfReader = None
 
+try:
+    import fitz
+    import pytesseract
+    from PIL import Image
+except ImportError:
+    fitz = None
+    pytesseract = None
+    Image = None
+
 
 # ============================================================
 # APPLICATION CONFIGURATION
@@ -142,7 +151,28 @@ def extract_text_from_pdf(filepath):
             if page_text:
                 text.append(page_text)
 
-        return "\n".join(text)
+        extracted_text = "\n".join(text).strip()
+
+        if extracted_text:
+            return extracted_text
+
+        # OCR scanned PDFs when they contain no selectable text.
+        if fitz is None or pytesseract is None or Image is None:
+            return ""
+
+        document = fitz.open(filepath)
+        ocr_text = []
+
+        for page in document:
+            pixmap = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
+            image = Image.frombytes("RGB", [pixmap.width, pixmap.height], pixmap.samples)
+            page_text = pytesseract.image_to_string(image)
+
+            if page_text.strip():
+                ocr_text.append(page_text.strip())
+
+        document.close()
+        return "\n\n".join(ocr_text)
 
     except Exception as error:
         print("PDF extraction error:", error)
@@ -285,6 +315,9 @@ def calculate_match_score(resume_text, job_description, job_skills):
 
     This can later be replaced by your ai_matching.py model.
     """
+
+    if not resume_text or not resume_text.strip():
+        return 0
 
     resume = resume_text.lower()
 
