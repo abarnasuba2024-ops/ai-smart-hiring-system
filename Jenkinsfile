@@ -9,6 +9,10 @@ pipeline {
         // Docker executable
         DOCKER = 'C:\\Users\\ELCOT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
 
+        // Use a job-local Docker config so a missing desktop credential helper
+        // in the Jenkins service account does not break public image pulls.
+        DOCKER_CONFIG = "${WORKSPACE}\\.docker-ci"
+
         // Docker image name
         IMAGE_NAME = 'ai-smart-hiring-system'
 
@@ -46,6 +50,7 @@ pipeline {
         stage('Docker Check') {
             steps {
                 echo 'Checking Docker installation...'
+                bat 'if not exist "%DOCKER_CONFIG%" mkdir "%DOCKER_CONFIG%"'
                 bat '"%DOCKER%" --version'
                 bat '"%DOCKER%" info'
             }
