@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: app
-          image: YOUR_DOCKERHUB_USERNAME/ai-smart-hiring-system:latest
-          imagePullPolicy: Always
+          image: ai-smart-hiring-system:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 5000
           readinessProbe:
