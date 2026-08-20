@@ -46,7 +46,8 @@ pipeline {
         stage('Docker Check') {
     steps {
         echo 'Checking Docker installation...'
-        bat '"C:\\Users\\ELCOT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" version'
+        bat 'docker --version'
+        bat 'docker info'
     }
 }
 
