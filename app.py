@@ -606,11 +606,11 @@ def upload_resume():
         )
 
         # Extract candidate information
-        name = extract_name(resume_text)
+        name = request.form.get("name", "").strip() or extract_name(resume_text)
 
-        email = extract_email(resume_text)
+        email = request.form.get("email", "").strip() or extract_email(resume_text)
 
-        phone = extract_phone(resume_text)
+        phone = request.form.get("phone", "").strip() or extract_phone(resume_text)
 
         # Calculate AI match
         score = calculate_match_score(
