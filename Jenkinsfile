@@ -7,7 +7,7 @@ pipeline {
         PYTHON = 'C:\\Users\\ELCOT\\AppData\\Local\\Programs\\Python\\Python310\\python.exe'
 
         // Docker executable
-        DOCKER = 'C:\\Users\\ELCOT\\AppData\\Local\\Programs\\Docker\\DockerDesktop\\resources\\bin\\docker.exe'
+        DOCKER = 'C:\\Users\\ELCOT\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe'
 
         // Docker image name
         IMAGE_NAME = 'ai-smart-hiring-system'
@@ -44,12 +44,12 @@ pipeline {
         }
 
         stage('Docker Check') {
-    steps {
-        echo 'Checking Docker installation...'
-        bat 'docker --version'
-        bat 'docker info'
-    }
-}
+            steps {
+                echo 'Checking Docker installation...'
+                bat '"%DOCKER%" --version'
+                bat '"%DOCKER%" info'
+            }
+        }
 
         stage('Docker Build') {
             steps {
