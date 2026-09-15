@@ -4,42 +4,55 @@
 
 <div class="detail-container">
 
-    <h1>
-        Candidate Details
-    </h1>
+    <!-- PAGE TITLE -->
+    <div class="page-title">
+        <h1>Candidate Details</h1>
+        <p>AI-powered resume analysis and candidate information</p>
+    </div>
 
 
+    <!-- CANDIDATE HEADER -->
     <div class="candidate-header">
 
-        <div>
+        <div class="candidate-main-info">
 
-            <h2>
-                {{ candidate["name"] }}
-            </h2>
+            <h2>{{ candidate["name"] }}</h2>
 
             <p>
                 Applied for:
-                <strong>
-                    {{ candidate["job_title"] }}
-                </strong>
+                <strong>{{ candidate["job_title"] or "Unknown Job" }}</strong>
             </p>
+
+            {% if candidate["email"] %}
+            <p>
+                📧 {{ candidate["email"] }}
+            </p>
+            {% endif %}
+
+            {% if candidate["phone"] %}
+            <p>
+                📞 {{ candidate["phone"] }}
+            </p>
+            {% endif %}
 
         </div>
 
 
+        <!-- SCORE -->
         <div class="big-score">
 
-            {{ candidate["score"] }}%
+            <div class="score-number">
+                {{ candidate["score"] }}%
+            </div>
 
-            <span>
-                AI Match
-            </span>
+            <span>AI Match</span>
 
         </div>
 
     </div>
 
 
+    <!-- INFORMATION CARDS -->
     <div class="info-grid">
 
         <div class="info-box">
@@ -68,44 +81,108 @@
 
             <h3>Status</h3>
 
-            <p>
+            <p class="status-text">
                 {{ candidate["status"] }}
             </p>
 
         </div>
 
+    </div>
+
+
+    <!-- AI RESUME ANALYSIS -->
+    <div class="resume-section">
+
+        <div class="section-heading">
+
+            <div>
+                <h2>AI Resume Analysis</h2>
+                <p>Extracted information from candidate resume</p>
+            </div>
+
+        </div>
+
+
+        <div class="resume-box">
+
+            {% if candidate["resume_text"] %}
+
+                <div class="resume-content">
+                    {{ candidate["resume_text"] }}
+                </div>
+
+            {% else %}
+
+                <div class="no-resume">
+                    <h3>No Resume Text Found</h3>
+
+                    <p>
+                        No readable text was found in this resume.
+                        Please upload a text-based PDF, DOCX, or TXT file.
+                    </p>
+                </div>
+
+            {% endif %}
+
+        </div>
 
     </div>
 
 
-    <h2>AI Resume Analysis</h2>
-
-    <div class="resume-box">
-
-        {% if candidate["resume_text"] %}
-            {{ candidate["resume_text"] }}
-        {% else %}
-            <p>No readable text was found in this resume. Upload a text-based PDF, DOCX, or TXT file for AI analysis and matching.</p>
-        {% endif %}
-
-    </div>
-
-
+    <!-- ACTION BUTTONS -->
     <div class="actions">
 
-        <form method="POST" action="{{ url_for('update_candidate_status', candidate_id=candidate['id']) }}" style="display:inline;">
-            <input type="hidden" name="status" value="Shortlisted">
-            <button type="submit" class="btn">✓ Shortlist</button>
+        <form
+            method="POST"
+            action="{{ url_for('update_candidate_status', candidate_id=candidate['id']) }}"
+        >
+
+            <input
+                type="hidden"
+                name="status"
+                value="Shortlisted"
+            >
+
+            <button type="submit" class="btn shortlist-btn">
+                ✓ Shortlist
+            </button>
+
         </form>
 
-        <form method="POST" action="{{ url_for('update_candidate_status', candidate_id=candidate['id']) }}" style="display:inline;">
-            <input type="hidden" name="status" value="Rejected">
-            <button type="submit" class="btn danger">✕ Reject</button>
+
+        <form
+            method="POST"
+            action="{{ url_for('update_candidate_status', candidate_id=candidate['id']) }}"
+        >
+
+            <input
+                type="hidden"
+                name="status"
+                value="Rejected"
+            >
+
+            <button type="submit" class="btn reject-btn">
+                ✕ Reject
+            </button>
+
         </form>
 
-        <form method="POST" action="{{ url_for('update_candidate_status', candidate_id=candidate['id']) }}" style="display:inline;">
-            <input type="hidden" name="status" value="New">
-            <button type="submit" class="btn secondary">Reset</button>
+
+        <form
+            method="POST"
+            action="{{ url_for('update_candidate_status', candidate_id=candidate['id']) }}"
+        >
+
+            <input
+                type="hidden"
+                name="status"
+                value="New"
+            >
+
+            <button type="submit" class="btn reset-btn">
+                ↻ Reset
+            </button>
+
         </form>
 
     </div>

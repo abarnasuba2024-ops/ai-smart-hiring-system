@@ -2,80 +2,795 @@
 
 {% block content %}
 
-<div class="hero">
+<div class="dashboard">
 
-    <h1>AI Smart Hiring System</h1>
+    <!-- =====================================================
+         WELCOME HEADER
+         ===================================================== -->
 
-    <p>
-        Automatically screen resumes and find the best candidates
-        using Artificial Intelligence.
-    </p>
+    <div class="dashboard-header">
 
-    <a href="{{ url_for('add_job') }}"
-       class="btn">
-        + Create New Job
-    </a>
+        <div>
+            <h1>{{ greeting }} 👋</h1>
 
-</div>
+            <p>
+                Welcome to your AI Smart Hiring Dashboard
+            </p>
+
+            <span class="dashboard-date">
+                {{ current_date }}
+            </span>
+        </div>
+
+        <div class="dashboard-time">
+            <span>Current Time</span>
+            <strong>{{ current_time }}</strong>
+        </div>
+
+    </div>
 
 
-<h2>Available Jobs</h2>
+    <!-- =====================================================
+         QUICK ACTIONS
+         ===================================================== -->
+
+    <div class="quick-actions">
+
+        <a href="{{ url_for('add_job') }}" class="quick-action">
+            <span class="action-icon">＋</span>
+
+            <div>
+                <strong>Add Job</strong>
+                <small>Create a new job vacancy</small>
+            </div>
+        </a>
 
 
-{% if jobs %}
+        <a href="{{ url_for('upload_resume') }}" class="quick-action">
+            <span class="action-icon">📄</span>
 
-<div class="job-grid">
+            <div>
+                <strong>Add Candidate</strong>
+                <small>Upload a candidate resume</small>
+            </div>
+        </a>
 
-    {% for job in jobs %}
 
-    <div class="job-card">
+        <a href="{{ url_for('candidates') }}" class="quick-action">
+            <span class="action-icon">👥</span>
 
-        <h3>
-            {{ job["title"] }}
-        </h3>
+            <div>
+                <strong>View Candidates</strong>
+                <small>Review candidate profiles</small>
+            </div>
+        </a>
 
-        <p>
-            {{ job["description"][:150] }}
-            {% if job["description"]|length > 150 %}
-            ...
-            {% endif %}
-        </p>
+    </div>
 
-        <p>
-            <strong>Required Skills:</strong>
-            {{ job["skills"] or "Not specified" }}
-        </p>
 
-        <div class="card-buttons">
+    <!-- =====================================================
+         STATISTICS
+         ===================================================== -->
 
-            <a class="btn"
-               href="{{ url_for('upload_resume') }}">
-                Upload Resume
-            </a>
+    <div class="stats-grid">
 
-            <a class="btn secondary"
-               href="{{ url_for('job_detail', job_id=job['id']) }}">
-                View Candidates
-            </a>
+        <div class="stat-card">
+
+            <div class="stat-icon">💼</div>
+
+            <div>
+                <h3>Total Jobs</h3>
+
+                <div class="number">
+                    {{ stats.total_jobs }}
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">👤</div>
+
+            <div>
+                <h3>Total Candidates</h3>
+
+                <div class="number">
+                    {{ stats.total_candidates }}
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">⭐</div>
+
+            <div>
+                <h3>Shortlisted</h3>
+
+                <div class="number">
+                    {{ stats.shortlisted }}
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">✓</div>
+
+            <div>
+                <h3>Selected</h3>
+
+                <div class="number">
+                    {{ stats.selected }}
+                </div>
+            </div>
 
         </div>
 
     </div>
 
-    {% endfor %}
+
+    <!-- =====================================================
+         JOB VACANCIES
+         ===================================================== -->
+
+    <div class="section-header">
+
+        <div>
+            <h2>Job Vacancies</h2>
+
+            <p>
+                Manage your current job openings
+            </p>
+        </div>
+
+        <a
+            href="{{ url_for('add_job') }}"
+            class="btn"
+        >
+            + Add Job
+        </a>
+
+    </div>
+
+
+    {% if jobs %}
+
+    <div class="jobs-grid">
+
+        {% for job in jobs %}
+
+        <div class="job-card">
+
+            <div class="job-card-top">
+
+                <div class="job-icon">
+                    💼
+                </div>
+
+                <span class="job-status">
+                    Active
+                </span>
+
+            </div>
+
+
+            <h2>
+                {{ job["title"] }}
+            </h2>
+
+
+            {% if job["location"] %}
+
+            <p class="job-location">
+                📍 {{ job["location"] }}
+            </p>
+
+            {% endif %}
+
+
+            <p class="job-description">
+
+                {{ job["description"][:180] }}
+
+                {% if job["description"]|length > 180 %}
+                    ...
+                {% endif %}
+
+            </p>
+
+
+            {% if job["skills"] %}
+
+            <div class="job-skills">
+
+                {% for skill in job["skills"].split(",") %}
+
+                <span>
+                    {{ skill.strip() }}
+                </span>
+
+                {% endfor %}
+
+            </div>
+
+            {% endif %}
+
+
+            <div class="job-card-footer">
+
+                <a
+                    href="{{ url_for('job_detail', job_id=job['id']) }}"
+                    class="btn"
+                >
+                    View Candidates
+                </a>
+
+                <a
+                    href="{{ url_for('upload_resume', job_id=job['id']) }}"
+                    class="btn secondary"
+                >
+                    Add Candidate
+                </a>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <!-- Empty state -->
+
+    <div class="empty-state">
+
+        <div class="empty-icon">
+            💼
+        </div>
+
+        <h2>
+            No Job Vacancies Yet
+        </h2>
+
+        <p>
+            Create your first job vacancy to start hiring candidates.
+        </p>
+
+        <a
+            href="{{ url_for('add_job') }}"
+            class="btn"
+        >
+            + Create First Job
+        </a>
+
+    </div>
+
+    {% endif %}
 
 </div>
 
-{% else %}
 
-<div class="empty">
+<!-- =========================================================
+     DASHBOARD STYLES
+     ========================================================= -->
 
-    <h3>No jobs available</h3>
+<style>
 
-    <p>Create your first job vacancy.</p>
+.dashboard {
+    width: 92%;
+    max-width: 1200px;
+    margin: 30px auto;
+}
 
-</div>
 
-{% endif %}
+/* ---------------------------------------------------------
+   HEADER
+   --------------------------------------------------------- */
+
+.dashboard-header {
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 16px;
+
+    padding: 28px 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 3px 12px rgba(15, 23, 42, 0.05);
+}
+
+.dashboard-header h1 {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size: 30px;
+}
+
+.dashboard-header p {
+    margin: 6px 0;
+
+    color: #64748b;
+
+    font-size: 15px;
+}
+
+.dashboard-date {
+    color: #94a3b8;
+
+    font-size: 13px;
+}
+
+.dashboard-time {
+    text-align: right;
+
+    background: #eff6ff;
+
+    border: 1px solid #dbeafe;
+
+    border-radius: 12px;
+
+    padding: 13px 18px;
+}
+
+.dashboard-time span {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+.dashboard-time strong {
+    display: block;
+
+    color: #2563eb;
+
+    font-size: 20px;
+
+    margin-top: 3px;
+}
+
+
+/* ---------------------------------------------------------
+   QUICK ACTIONS
+   --------------------------------------------------------- */
+
+.quick-actions {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+
+    margin-bottom: 25px;
+}
+
+.quick-action {
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    padding: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    transition: 0.2s;
+}
+
+.quick-action:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 18px rgba(15, 23, 42, 0.08);
+}
+
+.action-icon {
+    width: 44px;
+
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #eff6ff;
+
+    border-radius: 10px;
+
+    font-size: 21px;
+}
+
+.quick-action strong {
+    display: block;
+
+    color: #0f172a;
+
+    font-size: 15px;
+}
+
+.quick-action small {
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+
+/* ---------------------------------------------------------
+   STAT CARDS
+   --------------------------------------------------------- */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+
+    margin-bottom: 35px;
+}
+
+.stat-card {
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    box-shadow:
+        0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.stat-icon {
+    width: 45px;
+
+    height: 45px;
+
+    border-radius: 10px;
+
+    background: #f1f5f9;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 20px;
+}
+
+.stat-card h3 {
+    margin: 0;
+
+    font-size: 13px;
+
+    color: #64748b;
+}
+
+.stat-card .number {
+    font-size: 27px;
+
+    font-weight: 800;
+
+    color: #0f172a;
+}
+
+
+/* ---------------------------------------------------------
+   SECTION HEADER
+   --------------------------------------------------------- */
+
+.section-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.section-header h2 {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size: 23px;
+}
+
+.section-header p {
+    margin: 3px 0 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+
+/* ---------------------------------------------------------
+   JOB CARDS
+   --------------------------------------------------------- */
+
+.jobs-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 20px;
+}
+
+.job-card {
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    padding: 22px;
+
+    transition: 0.2s;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.job-card-top {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+}
+
+.job-icon {
+    width: 42px;
+
+    height: 42px;
+
+    background: #eff6ff;
+
+    border-radius: 10px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 20px;
+}
+
+.job-status {
+    background: #dcfce7;
+
+    color: #166534;
+
+    padding: 4px 9px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.job-card h2 {
+    margin: 0 0 7px;
+
+    font-size: 19px;
+
+    color: #0f172a;
+}
+
+.job-location {
+    color: #64748b;
+
+    font-size: 13px;
+
+    margin: 5px 0;
+}
+
+.job-description {
+    color: #64748b;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+    min-height: 60px;
+}
+
+.job-skills {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+
+    margin: 15px 0;
+}
+
+.job-skills span {
+    background: #f1f5f9;
+
+    color: #475569;
+
+    padding: 4px 8px;
+
+    border-radius: 5px;
+
+    font-size: 11px;
+}
+
+.job-card-footer {
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 15px;
+}
+
+.job-card-footer .btn {
+    flex: 1;
+
+    padding: 9px 10px;
+
+    font-size: 12px;
+}
+
+
+/* ---------------------------------------------------------
+   EMPTY STATE
+   --------------------------------------------------------- */
+
+.empty-state {
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    padding: 55px 20px;
+
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 45px;
+
+    margin-bottom: 10px;
+}
+
+.empty-state h2 {
+    margin: 0;
+
+    color: #0f172a;
+}
+
+.empty-state p {
+    color: #64748b;
+
+    margin-bottom: 20px;
+}
+
+
+/* ---------------------------------------------------------
+   MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 900px) {
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .jobs-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .quick-actions {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .dashboard {
+        width: 94%;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 18px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 25px;
+    }
+
+    .dashboard-time {
+        width: 100%;
+
+        text-align: left;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .jobs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        align-items: flex-start;
+
+        gap: 10px;
+    }
+
+    .section-header .btn {
+        padding: 8px 12px;
+
+        font-size: 12px;
+    }
+
+    .job-card-footer {
+        flex-direction: column;
+    }
+
+}
+
+</style>
 
 {% endblock %}

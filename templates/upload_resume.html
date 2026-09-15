@@ -2,102 +2,222 @@
 
 {% block content %}
 
-<div class="form-container">
+<div class="form-page">
 
-    <h1>Upload Candidate Resume</h1>
+    <div class="form-page-header">
 
-    {% if job %}
-    <div class="job-info">
+        <div>
 
-        <h2>
-            {{ job["title"] }}
-        </h2>
+            <span class="eyebrow">
+                AI RESUME ANALYSIS
+            </span>
 
-        <p>
-            <strong>Required Skills:</strong>
-            {{ job["skills"] or "Not specified" }}
-        </p>
+            <h1>
+                Upload Candidate Resume
+            </h1>
+
+            <p>
+                Upload a resume and let the AI engine calculate the job match.
+            </p>
+
+        </div>
 
     </div>
-    {% endif %}
 
 
-    <form
-        method="POST"
-        enctype="multipart/form-data"
-    >
+    <div class="upload-layout">
 
-        <label>
-            Select Job
-        </label>
+        <div class="form-card">
 
-        <select name="job_id" required>
-            <option value="">-- Choose a job --</option>
-            {% for job_item in jobs %}
-                <option value="{{ job_item['id'] }}"
-                    {% if job and job['id'] == job_item['id'] %}selected{% endif %}>
-                    {{ job_item['title'] }}
-                </option>
-            {% endfor %}
-        </select>
+            <form
+                method="POST"
+                action="{{ url_for('upload_resume') }}"
+                enctype="multipart/form-data"
+            >
 
-        <label>
-            Candidate Name
-        </label>
+                <div class="form-group">
 
-        <input
-            type="text"
-            name="name"
-            placeholder="Enter candidate name"
-            required
-        >
+                    <label>
+                        Select Job
+                    </label>
 
+                    <select
+                        name="job_id"
+                        required
+                    >
 
-        <label>
-            Email
-        </label>
+                        <option value="">
+                            Choose a job
+                        </option>
 
-        <input
-            type="email"
-            name="email"
-            placeholder="candidate@email.com"
-        >
+                        {% for item in jobs %}
 
+                        <option
+                            value="{{ item['id'] }}"
+                            {% if job and job['id'] == item['id'] %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ item['title'] }}
+                        </option>
 
-        <label>
-            Phone
-        </label>
+                        {% endfor %}
 
-        <input
-            type="text"
-            name="phone"
-            placeholder="Phone number"
-        >
+                    </select>
+
+                </div>
 
 
-        <label>
-            Resume PDF
-        </label>
+                <div class="form-grid">
 
-        <input
-            type="file"
-            name="resume"
-            accept=".pdf"
-            required
-        >
+                    <div class="form-group">
 
-        <p class="note">
-            Only PDF resumes are supported.
-        </p>
+                        <label>
+                            Candidate Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Auto-detected if empty"
+                        >
+
+                    </div>
 
 
-        <button
-            type="submit"
-            class="btn">
-            🤖 Analyze Resume
-        </button>
+                    <div class="form-group">
 
-    </form>
+                        <label>
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Auto-detected if empty"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label>
+                            Phone
+                        </label>
+
+                        <input
+                            type="text"
+                            name="phone"
+                            placeholder="Auto-detected if empty"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="resume-upload-box">
+
+                    <div class="upload-icon">
+                        ↑
+                    </div>
+
+                    <h3>
+                        Upload Resume
+                    </h3>
+
+                    <p>
+                        PDF, DOCX or TXT files up to 10 MB
+                    </p>
+
+                    <input
+                        type="file"
+                        name="resume"
+                        accept=".pdf,.docx,.txt"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <a
+                        href="{{ url_for('index') }}"
+                        class="cancel-btn"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="primary-btn"
+                    >
+                        Analyze Resume →
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <div class="ai-info-card">
+
+            <div class="ai-big-icon">
+                ✦
+            </div>
+
+            <h2>
+                AI Candidate Matching
+            </h2>
+
+            <p>
+                The system analyzes the uploaded resume against
+                the selected job requirements.
+            </p>
+
+
+            <div class="ai-feature">
+
+                <span>✓</span>
+
+                <div>
+                    <strong>Resume Parsing</strong>
+                    <small>Extract candidate information</small>
+                </div>
+
+            </div>
+
+
+            <div class="ai-feature">
+
+                <span>✓</span>
+
+                <div>
+                    <strong>Skill Matching</strong>
+                    <small>Compare required skills</small>
+                </div>
+
+            </div>
+
+
+            <div class="ai-feature">
+
+                <span>✓</span>
+
+                <div>
+                    <strong>AI Match Score</strong>
+                    <small>Calculate candidate compatibility</small>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

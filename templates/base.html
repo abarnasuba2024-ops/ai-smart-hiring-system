@@ -1,77 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>AI Smart Hiring System</title>
+    <title>
+        AI Smart Hiring System
+    </title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
 </head>
 
 <body>
 
-<nav class="navbar">
+<div class="app-layout">
 
-    <div class="logo">
-        🤖 AI Smart Hiring
-    </div>
+    <!-- SIDEBAR -->
 
-    <div class="nav-links">
+    <aside class="sidebar">
 
-        <a href="{{ url_for('index') }}">
-            Dashboard
-        </a>
+        <div class="brand">
 
-        <a href="{{ url_for('add_job') }}">
-            Add Job
-        </a>
+            <div class="brand-icon">
+                AI
+            </div>
 
-    </div>
-
-</nav>
-
-
-<div class="container">
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-
-        {% if messages %}
-
-            {% for category, message in messages %}
-
-                <div class="alert {{ category }}">
-                    {{ message }}
+            <div>
+                <div class="brand-title">
+                    Smart Hiring
                 </div>
 
-            {% endfor %}
+                <div class="brand-subtitle">
+                    AI Recruitment
+                </div>
+            </div>
 
-        {% endif %}
-
-    {% endwith %}
+        </div>
 
 
-    {% block content %}
+        <nav class="sidebar-nav">
 
-    {% endblock %}
+            <a
+                href="{{ url_for('index') }}"
+                class="nav-item"
+            >
+                <span class="nav-icon">⌂</span>
+                Dashboard
+            </a>
+
+
+            <a
+                href="{{ url_for('index') }}"
+                class="nav-item"
+            >
+                <span class="nav-icon">▣</span>
+                Jobs
+            </a>
+
+
+            <a
+                href="{{ url_for('candidates') }}"
+                class="nav-item"
+            >
+                <span class="nav-icon">♙</span>
+                Candidates
+            </a>
+
+
+            <a
+                href="{{ url_for('upload_resume') }}"
+                class="nav-item"
+            >
+                <span class="nav-icon">↥</span>
+                Upload Resume
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="ai-status">
+
+                <div class="status-dot"></div>
+
+                <div>
+                    <strong>AI Engine</strong>
+                    <small>Ready to analyze</small>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <div class="page-label">
+                    AI SMART HIRING
+                </div>
+
+                <h2>
+                    Recruitment Dashboard
+                </h2>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <div class="profile">
+
+                    <div class="profile-avatar">
+                        HR
+                    </div>
+
+                    <div>
+                        <strong>HR Manager</strong>
+                        <small>Administrator</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- FLASH MESSAGES -->
+
+        <div class="flash-container">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+
+                {% if messages %}
+
+                    {% for category, message in messages %}
+
+                        <div class="flash {{ category }}">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            {% endwith %}
+
+        </div>
+
+
+        <!-- PAGE CONTENT -->
+
+        <section class="page-content">
+
+            {% block content %}
+            {% endblock %}
+
+        </section>
+
+    </main>
 
 </div>
 
 
-<footer>
-
-    <p>
-        AI Smart Hiring System | Python Flask + Machine Learning
-    </p>
-
-</footer>
-
 </body>
-
 </html>
