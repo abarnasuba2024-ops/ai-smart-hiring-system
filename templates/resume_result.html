@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Resume Analysis - AI Smart Hiring</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            padding: 25px 18px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        .brand span {
+            color: #60a5fa;
+        }
+
+        .menu a {
+            display: block;
+            text-decoration: none;
+            color: #d1d5db;
+            padding: 14px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+
+        .menu a:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+        .main {
+            margin-left: 240px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 75px;
+            background: white;
+            display: flex;
+            align-items: center;
+            padding: 0 35px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .topbar h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .content {
+            padding: 35px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .card {
+            background: white;
+            max-width: 950px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            margin-bottom: 25px;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 21px;
+        }
+
+        .candidate-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .score-section {
+            text-align: center;
+            padding: 25px;
+        }
+
+        .score {
+            font-size: 58px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .score-label {
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .decision {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .select {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .reject {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .skill {
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 8px 13px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .required {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .button {
+            text-decoration: none;
+            padding: 13px 22px;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .candidate-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <div class="brand">
+            AI <span>Smart Hiring</span>
+        </div>
+
+        <div class="menu">
+
+            <a href="/">
+                Dashboard
+            </a>
+
+            <a href="/add-job">
+                Add Job
+            </a>
+
+            <a href="/candidate">
+                Add Candidate
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+        <div class="topbar">
+            <h2>Resume Analysis Result</h2>
+        </div>
+
+
+        <div class="content">
+
+            <a href="/candidate" class="back">
+                ← Add Another Candidate
+            </a>
+
+
+            <!-- CANDIDATE INFORMATION -->
+
+            <div class="card">
+
+                <h3>Candidate Information</h3>
+
+                <div class="candidate-info">
+
+                    <div class="info-box">
+
+                        <div class="info-label">
+                            Full Name
+                        </div>
+
+                        <div class="info-value">
+                            {{ name }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <div class="info-label">
+                            Email
+                        </div>
+
+                        <div class="info-value">
+                            {{ email }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <div class="info-label">
+                            Mobile
+                        </div>
+
+                        <div class="info-value">
+                            {{ mobile }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <div class="info-label">
+                            Location
+                        </div>
+
+                        <div class="info-value">
+                            {{ location }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <div class="info-label">
+                            Applied Job Role
+                        </div>
+
+                        <div class="info-value">
+                            {{ job_role }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <div class="info-label">
+                            Resume
+                        </div>
+
+                        <div class="info-value">
+                            {{ filename }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MATCH SCORE -->
+
+            <div class="card">
+
+                <div class="score-section">
+
+                    <h3>Resume Match Score</h3>
+
+                    <div class="score">
+                        {{ score }}%
+                    </div>
+
+                    <div class="score-label">
+                        Based on required skills
+                    </div>
+
+
+                    {% if decision == "SELECT" %}
+
+                        <div class="decision select">
+                            ✓ SELECT
+                        </div>
+
+                    {% else %}
+
+                        <div class="decision reject">
+                            ✕ REJECT
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- FOUND SKILLS -->
+
+            <div class="card">
+
+                <h3>Skills Found in Resume</h3>
+
+                <div class="skills">
+
+                    {% if found_skills %}
+
+                        {% for skill in found_skills %}
+
+                            <span class="skill">
+                                {{ skill }}
+                            </span>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p>No matching skills found.</p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- REQUIRED SKILLS -->
+
+            <div class="card">
+
+                <h3>Required Skills</h3>
+
+                <div class="skills">
+
+                    {% if required_skills %}
+
+                        {% for skill in required_skills %}
+
+                            <span class="skill required">
+                                {{ skill }}
+                            </span>
+
+                        {% endfor %}
+
+                    {% else %}
+
+                        <p>No required skills available.</p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="buttons">
+
+                <a
+                    href="/candidate"
+                    class="button primary"
+                >
+                    Add Another Candidate
+                </a>
+
+                <a
+                    href="/"
+                    class="button secondary"
+                >
+                    Back to Dashboard
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

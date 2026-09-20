@@ -10,3 +10,5 @@ pytesseract
 Pillow
 python-docx
 requests
+werkzeug
+gunicorn

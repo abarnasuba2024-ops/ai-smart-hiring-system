@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Candidate - AI Smart Hiring</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            padding: 25px 18px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        .brand span {
+            color: #60a5fa;
+        }
+
+        .menu a {
+            display: block;
+            text-decoration: none;
+            color: #d1d5db;
+            padding: 14px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+
+        .menu a:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+        .menu .active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .main {
+            margin-left: 240px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 75px;
+            background: white;
+            display: flex;
+            align-items: center;
+            padding: 0 35px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .topbar h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .content {
+            padding: 35px;
+        }
+
+        .card {
+            background: white;
+            max-width: 850px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 22px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .file-box {
+            border: 2px dashed #cbd5e1;
+            padding: 25px;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+
+        .file-box input {
+            border: none;
+            padding: 5px;
+        }
+
+        .button {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: #1d4ed8;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <div class="brand">
+            AI <span>Smart Hiring</span>
+        </div>
+
+        <div class="menu">
+
+            <a href="/">
+                Dashboard
+            </a>
+
+            <a href="/add-job">
+                Add Job
+            </a>
+
+            <a href="/candidate" class="active">
+                Add Candidate
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+        <div class="topbar">
+            <h2>Add Candidate</h2>
+        </div>
+
+
+        <div class="content">
+
+            <a href="/" class="back">
+                ← Back to Dashboard
+            </a>
+
+
+            <div class="card">
+
+                <h3>Candidate Information</h3>
+
+
+                <form
+                    action="/candidate"
+                    method="POST"
+                    enctype="multipart/form-data"
+                >
+
+                    <div class="row">
+
+                        <div class="field">
+
+                            <label for="name">
+                                Full Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="Enter candidate name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="email">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter email"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <div class="field">
+
+                            <label for="mobile">
+                                Mobile Number
+                            </label>
+
+                            <input
+                                type="text"
+                                id="mobile"
+                                name="mobile"
+                                placeholder="Enter mobile number"
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="location">
+                                Location
+                            </label>
+
+                            <input
+                                type="text"
+                                id="location"
+                                name="location"
+                                placeholder="Enter location"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="job_role">
+                            Job Role
+                        </label>
+
+                        <select
+                            id="job_role"
+                            name="job_role"
+                            required
+                        >
+
+                            <option value="">
+                                Select Job Role
+                            </option>
+
+                            {% for role in job_roles %}
+
+                            <option value="{{ role }}">
+                                {{ role }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Resume
+                        </label>
+
+                        <div class="file-box">
+
+                            <input
+                                type="file"
+                                name="resume"
+                                accept=".pdf,.docx"
+                                required
+                            >
+
+                            <p>
+                                Upload PDF or DOCX resume
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="button"
+                    >
+                        Add Candidate & Analyze Resume
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
