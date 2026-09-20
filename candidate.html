@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Candidate Application - AI Smart Hiring</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        nav {
+            background: #111827;
+            padding: 18px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h2 {
+            color: white;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #6b7280;
+        }
+
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .resume-box {
+            border: 2px dashed #9ca3af;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+            background: #f9fafb;
+        }
+
+        .resume-box input {
+            border: none;
+            background: transparent;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #1d4ed8;
+        }
+
+        #message {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <h2>AI Smart Hiring</h2>
+
+    <div>
+        <a href="index.html">Home</a>
+        <a href="add_job.html">Create Job</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Candidate Application</h1>
+        <p>Submit your details and resume for AI-powered screening</p>
+    </div>
+
+    <div class="card">
+
+        <form onsubmit="submitApplication(event)">
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input
+                    type="text"
+                    placeholder="Enter your full name"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input
+                    type="email"
+                    placeholder="Enter your email"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input
+                    type="tel"
+                    placeholder="Enter your mobile number"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label>Location</label>
+                <input
+                    type="text"
+                    placeholder="Enter your location"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label>Job Role</label>
+
+                <select required>
+                    <option value="">Select Job Role</option>
+                    <option>Python Developer</option>
+                    <option>Java Developer</option>
+                    <option>Web Developer</option>
+                    <option>Full Stack Developer</option>
+                    <option>Data Analyst</option>
+                    <option>Data Scientist</option>
+                    <option>Software Engineer</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+
+                <label>Upload Resume</label>
+
+                <div class="resume-box">
+
+                    <p>📄 Select your resume</p>
+                    <br>
+
+                    <input
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        required>
+
+                    <small>
+                        Accepted formats: PDF, DOC, DOCX
+                    </small>
+
+                </div>
+
+            </div>
+
+            <button class="submit-btn" type="submit">
+                Submit Application
+            </button>
+
+            <div id="message">
+                ✓ Application submitted successfully!
+                <br><br>
+                Resume analysis will be processed next.
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<footer>
+    © 2026 AI Smart Hiring System
+</footer>
+
+<script>
+function submitApplication(event) {
+
+    event.preventDefault();
+
+    document.getElementById("message").style.display = "block";
+}
+</script>
+
+</body>
+</html>
