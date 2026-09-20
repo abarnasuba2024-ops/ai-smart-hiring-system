@@ -10,3 +10,4 @@ pytesseract
 Pillow
 python-docx
 requests
+Werkzeug
