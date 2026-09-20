@@ -1,149 +1,441 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-{% block content %}
+    <title>Create New Job | AI Smart Hiring</title>
 
-<div class="form-page">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    <div class="form-page-header">
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
 
-        <div>
+        /* NAVBAR */
+        .navbar {
+            height: 70px;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+            color: white;
+        }
 
-            <span class="eyebrow">
-                JOB MANAGEMENT
-            </span>
+        .logo {
+            font-size: 21px;
+            font-weight: bold;
+        }
 
-            <h1>
-                Create New Job
-            </h1>
+        .logo span {
+            color: #60a5fa;
+        }
 
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .nav-btn {
+            background: #2563eb;
+            color: white !important;
+            padding: 10px 18px;
+            border-radius: 7px;
+        }
+
+        /* MAIN */
+        .page {
+            max-width: 1050px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        .back {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .title-section {
+            margin-top: 22px;
+            margin-bottom: 30px;
+        }
+
+        .title-section h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #111827;
+        }
+
+        .title-section p {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        /* CARD */
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 35px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.07);
+            border: 1px solid #e5e7eb;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #111827;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+            transition: 0.2s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 6px;
+        }
+
+        /* BUTTONS */
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+        }
+
+        .cancel {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .cancel:hover {
+            background: #e5e7eb;
+        }
+
+        .submit {
+            background: #2563eb;
+            color: white;
+        }
+
+        .submit:hover {
+            background: #1d4ed8;
+        }
+
+        /* SUCCESS MESSAGE */
+        .success {
+            display: none;
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 8px;
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* FOOTER */
+        footer {
+            margin-top: 60px;
+            background: #111827;
+            color: #9ca3af;
+            text-align: center;
+            padding: 25px;
+            font-size: 13px;
+        }
+
+        /* MOBILE */
+        @media (max-width: 700px) {
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full {
+                grid-column: auto;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+            .title-section h1 {
+                font-size: 26px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+
+        <div class="logo">
+            AI <span>Smart Hiring</span>
+        </div>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="add_job.html" class="nav-btn">Create Job</a>
+        </div>
+
+    </nav>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="page">
+
+        <a href="index.html" class="back">
+            ← Back to Dashboard
+        </a>
+
+        <div class="title-section">
+            <h1>Create New Job</h1>
             <p>
-                Add a job vacancy and define the skills required.
+                Create a job vacancy and define the skills required
+                to find the right candidates.
             </p>
+        </div>
+
+
+        <div class="card">
+
+            <div class="section-title">
+                Job Information
+            </div>
+
+            <form id="jobForm">
+
+                <div class="form-grid">
+
+                    <!-- JOB TITLE -->
+                    <div class="form-group">
+                        <label for="jobTitle">Job Title</label>
+
+                        <input
+                            type="text"
+                            id="jobTitle"
+                            placeholder="e.g. Python Developer"
+                            required
+                        >
+                    </div>
+
+
+                    <!-- LOCATION -->
+                    <div class="form-group">
+                        <label for="location">Location</label>
+
+                        <input
+                            type="text"
+                            id="location"
+                            placeholder="e.g. Coimbatore / Remote"
+                            required
+                        >
+                    </div>
+
+
+                    <!-- JOB TYPE -->
+                    <div class="form-group">
+                        <label for="jobType">Job Type</label>
+
+                        <select id="jobType">
+                            <option>Full Time</option>
+                            <option>Part Time</option>
+                            <option>Internship</option>
+                            <option>Contract</option>
+                        </select>
+                    </div>
+
+
+                    <!-- EXPERIENCE -->
+                    <div class="form-group">
+                        <label for="experience">Experience</label>
+
+                        <select id="experience">
+                            <option>Fresher</option>
+                            <option>0 - 2 Years</option>
+                            <option>2 - 5 Years</option>
+                            <option>5+ Years</option>
+                        </select>
+                    </div>
+
+
+                    <!-- SKILLS -->
+                    <div class="form-group full">
+
+                        <label for="skills">
+                            Required Skills
+                        </label>
+
+                        <input
+                            type="text"
+                            id="skills"
+                            placeholder="Python, Flask, SQL, Machine Learning"
+                            required
+                        >
+
+                        <div class="hint">
+                            Separate multiple skills using commas.
+                        </div>
+
+                    </div>
+
+
+                    <!-- DESCRIPTION -->
+                    <div class="form-group full">
+
+                        <label for="description">
+                            Job Description
+                        </label>
+
+                        <textarea
+                            id="description"
+                            placeholder="Describe the responsibilities, requirements and qualifications..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+                <div class="actions">
+
+                    <a href="index.html" class="btn cancel">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn submit">
+                        Create Job →
+                    </button>
+
+                </div>
+
+
+                <div id="successMessage" class="success">
+                    ✓ Job created successfully!
+                </div>
+
+            </form>
 
         </div>
 
-        <a
-            href="{{ url_for('index') }}"
-            class="back-btn"
-        >
-            ← Back
-        </a>
-
-    </div>
+    </main>
 
 
-    <div class="form-card">
-
-        <form
-            method="POST"
-            action="{{ url_for('add_job') }}"
-        >
-
-            <div class="form-section">
-
-                <h3>
-                    Job Information
-                </h3>
-
-                <p>
-                    Enter the basic details for this position.
-                </p>
-
-            </div>
+    <!-- FOOTER -->
+    <footer>
+        © 2026 AI Smart Hiring System · Smart Recruitment & Candidate Management
+    </footer>
 
 
-            <div class="form-grid">
+    <script>
 
-                <div class="form-group full">
+        document.getElementById("jobForm").addEventListener("submit", function(event) {
 
-                    <label>
-                        Job Title
-                    </label>
+            event.preventDefault();
 
-                    <input
-                        type="text"
-                        name="title"
-                        placeholder="e.g. Python Developer"
-                        required
-                    >
+            document.getElementById("successMessage").style.display = "block";
 
-                </div>
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: "smooth"
+            });
 
+        });
 
-                <div class="form-group">
+    </script>
 
-                    <label>
-                        Location
-                    </label>
-
-                    <input
-                        type="text"
-                        name="location"
-                        placeholder="e.g. Coimbatore / Remote"
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Required Skills
-                    </label>
-
-                    <input
-                        type="text"
-                        name="skills"
-                        placeholder="Python, Flask, SQL, Machine Learning"
-                    >
-
-                    <small>
-                        Separate multiple skills using commas.
-                    </small>
-
-                </div>
-
-
-                <div class="form-group full">
-
-                    <label>
-                        Job Description
-                    </label>
-
-                    <textarea
-                        name="description"
-                        rows="8"
-                        placeholder="Describe the responsibilities, requirements and qualifications..."
-                        required
-                    ></textarea>
-
-                </div>
-
-            </div>
-
-
-            <div class="form-actions">
-
-                <a
-                    href="{{ url_for('index') }}"
-                    class="cancel-btn"
-                >
-                    Cancel
-                </a>
-
-                <button
-                    type="submit"
-                    class="primary-btn"
-                >
-                    Create Job →
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
-
-{% endblock %}
+</body>
+</html>

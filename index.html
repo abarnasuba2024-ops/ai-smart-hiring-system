@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Hiring System</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f6f8;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>AI Smart Hiring System</h1>
+    <p>Smart Recruitment & Candidate Management</p>
+</header>
+
+<div class="container">
+    <h2>Welcome</h2>
+    <p>
+        This is the AI Smart Hiring System live demo.
+    </p>
+
+    <a href="add_job.html" class="start-btn">
+    Start Hiring
+</a>
+
+    <p id="message"></p>
+</div>
+
+<script>
+function showMessage() {
+    document.getElementById("message").innerText =
+        "Welcome to the AI Smart Hiring System!";
+}
+</script>
+
+</body>
+</html>
