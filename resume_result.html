@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Resume Analysis - AI Smart Hiring</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        nav {
+            background: #111827;
+            padding: 18px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h2 {
+            color: white;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title h1 {
+            margin-bottom: 10px;
+        }
+
+        .title p {
+            color: #6b7280;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+        }
+
+        .candidate-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .info {
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .skill {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .score-box {
+            text-align: center;
+        }
+
+        .score {
+            font-size: 58px;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 15px 0;
+        }
+
+        .match-bar {
+            height: 15px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .match-fill {
+            width: 87%;
+            height: 100%;
+            background: #2563eb;
+        }
+
+        .decision {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 13px 35px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .select-btn {
+            background: #16a34a;
+            color: white;
+        }
+
+        .reject-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        #decision-message {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 600px) {
+            .candidate-info {
+                grid-template-columns: 1fr;
+            }
+
+            .decision {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <h2>AI Smart Hiring</h2>
+
+    <div>
+        <a href="index.html">Home</a>
+        <a href="candidate.html">Candidate</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="title">
+        <h1>AI Resume Analysis</h1>
+        <p>Candidate profile and job matching result</p>
+    </div>
+
+    <!-- Candidate Information -->
+    <div class="card">
+
+        <h2>Candidate Information</h2>
+
+        <br>
+
+        <div class="candidate-info">
+
+            <div class="info">
+                <strong>Name</strong>
+                Arun Kumar
+            </div>
+
+            <div class="info">
+                <strong>Email</strong>
+                arun@gmail.com
+            </div>
+
+            <div class="info">
+                <strong>Mobile</strong>
+                9876543210
+            </div>
+
+            <div class="info">
+                <strong>Location</strong>
+                Chennai
+            </div>
+
+            <div class="info">
+                <strong>Applied Role</strong>
+                Python Developer
+            </div>
+
+            <div class="info">
+                <strong>Resume</strong>
+                arun_resume.pdf
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Resume Summary -->
+    <div class="card">
+
+        <h2>Resume Summary</h2>
+
+        <br>
+
+        <p>
+            Python Developer with experience in developing web applications
+            using Python, Flask and Django. Experienced in REST APIs,
+            SQL databases and Git. Strong understanding of backend
+            development and software engineering practices.
+        </p>
+
+    </div>
+
+    <!-- Skills -->
+    <div class="card">
+
+        <h2>Skills Detected</h2>
+
+        <div class="skills">
+
+            <span class="skill">Python</span>
+            <span class="skill">Flask</span>
+            <span class="skill">Django</span>
+            <span class="skill">REST API</span>
+            <span class="skill">SQL</span>
+            <span class="skill">Git</span>
+            <span class="skill">HTML</span>
+            <span class="skill">JavaScript</span>
+
+        </div>
+
+    </div>
+
+    <!-- Score -->
+    <div class="card score-box">
+
+        <h2>Job Match Score</h2>
+
+        <div class="score">87%</div>
+
+        <div class="match-bar">
+            <div class="match-fill"></div>
+        </div>
+
+        <p style="margin-top:15px;">
+            Strong match for Python Developer role
+        </p>
+
+    </div>
+
+    <!-- Decision -->
+    <div class="card">
+
+        <h2 style="text-align:center;">
+            Candidate Decision
+        </h2>
+
+        <div class="decision">
+
+            <button
+                class="btn select-btn"
+                onclick="selectCandidate()">
+                ✓ SELECT
+            </button>
+
+            <button
+                class="btn reject-btn"
+                onclick="rejectCandidate()">
+                ✕ REJECT
+            </button>
+
+        </div>
+
+        <div id="decision-message"></div>
+
+    </div>
+
+</div>
+
+<footer>
+    © 2026 AI Smart Hiring System
+</footer>
+
+<script>
+
+function selectCandidate() {
+
+    const message =
+        document.getElementById("decision-message");
+
+    message.style.display = "block";
+    message.style.background = "#dcfce7";
+    message.style.color = "#166534";
+
+    message.innerHTML =
+        "✓ Candidate selected successfully!";
+}
+
+function rejectCandidate() {
+
+    const message =
+        document.getElementById("decision-message");
+
+    message.style.display = "block";
+    message.style.background = "#fee2e2";
+    message.style.color = "#991b1b";
+
+    message.innerHTML =
+        "✕ Candidate rejected.";
+}
+
+</script>
+
+</body>
+</html>
