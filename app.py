@@ -1,39 +1,188 @@
-from flask import Flask, render_template, request, redirect, url_for
-from werkzeug.utils import secure_filename
 import os
 import re
 
-app = Flask(__name__)
+from flask import Flask, render_template, request
+from werkzeug.utils import secure_filename
 
-# ==================================================
+
+# =========================================================
 # PROJECT PATHS
-# ==================================================
+# =========================================================
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# If app.py is inside templates folder,
-# HTML files are in the same folder.
+# If app.py is inside templates folder
 if os.path.basename(BASE_DIR).lower() == "templates":
+    PROJECT_DIR = os.path.dirname(BASE_DIR)
     TEMPLATE_FOLDER = BASE_DIR
 else:
+    PROJECT_DIR = BASE_DIR
     TEMPLATE_FOLDER = os.path.join(BASE_DIR, "templates")
 
-UPLOAD_FOLDER = os.path.join(
-    BASE_DIR,
-    "uploads"
+
+UPLOAD_FOLDER = os.path.join(PROJECT_DIR, "uploads")
+
+
+# =========================================================
+# FLASK APP
+# =========================================================
+
+app = Flask(
+    __name__,
+    template_folder=TEMPLATE_FOLDER
 )
 
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB
+
+
+# Create uploads folder
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
+
+# =========================================================
+# ALLOWED FILE TYPES
+# =========================================================
+
+ALLOWED_EXTENSIONS = {"pdf", "docx"}
 
 
-# ==================================================
-# JOB SKILLS
-# ==================================================
+def allowed_file(filename):
+    return (
+        "." in filename
+        and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+    )
 
-JOB_SKILLS = {
+
+# =========================================================
+# RESUME TEXT EXTRACTION
+# =========================================================
+
+def extract_resume_text(filepath):
+    extension = filepath.rsplit(".", 1)[1].lower()
+
+    # ---------------- PDF ----------------
+    if extension == "pdf":
+        try:
+            import PyPDF2
+
+            text = ""
+
+            with open(filepath, "rb") as file:
+                reader = PyPDF2.PdfReader(file)
+
+                for page in reader.pages:
+                    page_text = page.extract_text()
+
+                    if page_text:
+                        text += page_text + "\n"
+
+            return text
+
+        except ImportError:
+            raise Exception(
+                "PyPDF2 is not installed. Run: pip install PyPDF2"
+            )
+
+    # ---------------- DOCX ----------------
+    elif extension == "docx":
+        try:
+            from docx import Document
+
+            document = Document(filepath)
+
+            text = []
+
+            for paragraph in document.paragraphs:
+                text.append(paragraph.text)
+
+            return "\n".join(text)
+
+        except ImportError:
+            raise Exception(
+                "python-docx is not installed. Run: pip install python-docx"
+            )
+
+    return ""
+
+
+# =========================================================
+# SKILL DETECTION
+# =========================================================
+
+SKILLS = [
+    "python",
+    "java",
+    "javascript",
+    "html",
+    "css",
+    "react",
+    "node.js",
+    "node",
+    "sql",
+    "mysql",
+    "mongodb",
+    "flask",
+    "django",
+    "machine learning",
+    "deep learning",
+    "artificial intelligence",
+    "data science",
+    "data analysis",
+    "excel",
+    "power bi",
+    "tableau",
+    "git",
+    "github",
+    "aws",
+    "azure",
+    "docker",
+    "c++",
+    "rest api",
+]
+
+
+def detect_skills(text):
+    text_lower = text.lower()
+
+    found_skills = []
+
+    for skill in SKILLS:
+
+        # Special handling for C++
+        if skill == "c++":
+            if "c++" in text_lower:
+                found_skills.append(skill)
+            continue
+
+        # Special handling for Node.js
+        if skill == "node.js":
+            if "node.js" in text_lower:
+                found_skills.append(skill)
+            continue
+
+        # Avoid matching partial words
+        pattern = r"\b" + re.escape(skill) + r"\b"
+
+        if re.search(pattern, text_lower):
+            found_skills.append(skill)
+
+    return found_skills
+
+
+# =========================================================
+# JOB ROLES AND REQUIRED SKILLS
+# =========================================================
+
+JOB_REQUIREMENTS = {
+
+    "Software Developer": [
+        "python",
+        "java",
+        "javascript",
+        "sql",
+        "git"
+    ],
 
     "Python Developer": [
         "python",
@@ -43,27 +192,49 @@ JOB_SKILLS = {
         "git"
     ],
 
-    "Data Scientist": [
-        "python",
-        "machine learning",
-        "pandas",
-        "numpy",
-        "sql"
+    "Java Developer": [
+        "java",
+        "sql",
+        "git"
     ],
 
     "Web Developer": [
         "html",
         "css",
         "javascript",
-        "react",
-        "bootstrap"
+        "sql",
+        "git"
     ],
 
-    "Java Developer": [
-        "java",
-        "spring",
+    "Data Analyst": [
+        "python",
         "sql",
-        "hibernate",
+        "excel",
+        "data analysis",
+        "power bi"
+    ],
+
+    "Data Scientist": [
+        "python",
+        "sql",
+        "machine learning",
+        "data science",
+        "data analysis"
+    ],
+
+    "Machine Learning Engineer": [
+        "python",
+        "machine learning",
+        "deep learning",
+        "sql",
+        "git"
+    ],
+
+    "AI Engineer": [
+        "python",
+        "artificial intelligence",
+        "machine learning",
+        "deep learning",
         "git"
     ],
 
@@ -72,289 +243,96 @@ JOB_SKILLS = {
         "css",
         "javascript",
         "react",
-        "node",
-        "sql"
+        "node.js",
+        "sql",
+        "git",
+        "github",
+        "rest api",
+        "mongodb"
     ],
 
-    "Machine Learning Engineer": [
+    "Backend Developer": [
         "python",
-        "machine learning",
-        "tensorflow",
-        "pytorch",
-        "numpy"
-    ]
+        "flask",
+        "sql",
+        "mongodb",
+        "rest api",
+        "git"
+    ],
+
+    "Frontend Developer": [
+        "html",
+        "css",
+        "javascript",
+        "react",
+        "git"
+    ],
 }
 
 
-# ==================================================
-# FILE CHECK
-# ==================================================
-
-def allowed_file(filename):
-
-    if "." not in filename:
-        return False
-
-    extension = filename.rsplit(
-        ".",
-        1
-    )[1].lower()
-
-    return extension in [
-        "pdf",
-        "docx"
-    ]
-
-
-# ==================================================
-# PDF TEXT
-# ==================================================
-
-def extract_pdf_text(filepath):
-
-    try:
-
-        from PyPDF2 import PdfReader
-
-    except ImportError:
-
-        return (
-            "PyPDF2 is not installed. "
-            "Run: pip install PyPDF2"
-        )
-
-    text = ""
-
-    try:
-
-        reader = PdfReader(filepath)
-
-        for page in reader.pages:
-
-            page_text = page.extract_text()
-
-            if page_text:
-                text += page_text + "\n"
-
-    except Exception as error:
-
-        print("PDF ERROR:", error)
-
-    return text
-
-
-# ==================================================
-# DOCX TEXT
-# ==================================================
-
-def extract_docx_text(filepath):
-
-    try:
-
-        from docx import Document
-
-    except ImportError:
-
-        return (
-            "python-docx is not installed. "
-            "Run: pip install python-docx"
-        )
-
-    text = ""
-
-    try:
-
-        document = Document(filepath)
-
-        for paragraph in document.paragraphs:
-
-            if paragraph.text:
-                text += paragraph.text + "\n"
-
-    except Exception as error:
-
-        print("DOCX ERROR:", error)
-
-    return text
-
-
-# ==================================================
-# RESUME TEXT
-# ==================================================
-
-def extract_resume_text(filepath):
-
-    extension = filepath.rsplit(
-        ".",
-        1
-    )[1].lower()
-
-    if extension == "pdf":
-
-        return extract_pdf_text(filepath)
-
-    if extension == "docx":
-
-        return extract_docx_text(filepath)
-
-    return ""
-
-
-# ==================================================
-# SKILL DETECTION
-# ==================================================
-
-def detect_skills(text, required_skills):
-
-    text = text.lower()
-
-    found = []
-
-    for skill in required_skills:
-
-        skill_lower = skill.lower()
-
-        if re.search(
-            r"\b"
-            + re.escape(skill_lower)
-            + r"\b",
-            text
-        ):
-
-            found.append(skill)
-
-    return found
-
-
-# ==================================================
-# SCORE
-# ==================================================
-
-def calculate_score(
-    found_skills,
-    required_skills
-):
-
-    if not required_skills:
-
-        return 0
-
-    score = (
-        len(found_skills)
-        / len(required_skills)
-    ) * 100
-
-    return round(score)
-
-
-# ==================================================
-# DASHBOARD
-# ==================================================
+# =========================================================
+# HOME / DASHBOARD
+# =========================================================
 
 @app.route("/")
-def dashboard():
-
-    return render_template(
-        "index.html"
-    )
+def home():
+    return render_template("index.html")
 
 
-# ==================================================
-# CANDIDATE
-# ==================================================
+# =========================================================
+# ADD CANDIDATE
+# =========================================================
 
-@app.route(
-    "/candidate",
-    methods=["GET", "POST"]
-)
+@app.route("/candidate", methods=["GET", "POST"])
 def candidate():
 
-    # --------------------------
-    # OPEN CANDIDATE PAGE
-    # --------------------------
+    job_roles = list(JOB_REQUIREMENTS.keys())
 
     if request.method == "GET":
-
         return render_template(
             "candidate.html",
-            job_roles=list(
-                JOB_SKILLS.keys()
-            )
+            job_roles=job_roles
         )
 
-    # --------------------------
+    # -----------------------------
     # FORM DATA
-    # --------------------------
+    # -----------------------------
 
-    name = request.form.get(
-        "name",
-        ""
-    ).strip()
+    name = request.form.get("name", "").strip()
+    email = request.form.get("email", "").strip()
+    mobile = request.form.get("mobile", "").strip()
+    location = request.form.get("location", "").strip()
+    job_role = request.form.get("job_role", "").strip()
 
-    email = request.form.get(
-        "email",
-        ""
-    ).strip()
+    resume = request.files.get("resume")
 
-    mobile = request.form.get(
-        "mobile",
-        ""
-    ).strip()
-
-    location = request.form.get(
-        "location",
-        ""
-    ).strip()
-
-    job_role = request.form.get(
-        "job_role",
-        ""
-    ).strip()
-
-    resume = request.files.get(
-        "resume"
-    )
-
-    # --------------------------
-    # VALIDATION
-    # --------------------------
+    # -----------------------------
+    # BASIC VALIDATION
+    # -----------------------------
 
     if not name:
-
-        return "Please enter candidate name."
+        return "Candidate name is required."
 
     if not email:
-
-        return "Please enter candidate email."
+        return "Email is required."
 
     if not job_role:
+        return "Job role is required."
 
-        return "Please select a job role."
-
-    if resume is None:
-
+    if not resume:
         return "Please upload a resume."
 
     if resume.filename == "":
-
         return "Please select a resume file."
 
-    if not allowed_file(
-        resume.filename
-    ):
+    if not allowed_file(resume.filename):
+        return "Only PDF and DOCX files are allowed."
 
-        return (
-            "Invalid file. "
-            "Please upload PDF or DOCX."
-        )
+    # -----------------------------
+    # SAVE RESUME
+    # -----------------------------
 
-    # --------------------------
-    # SAVE FILE
-    # --------------------------
-
-    filename = secure_filename(
-        resume.filename
-    )
+    filename = secure_filename(resume.filename)
 
     filepath = os.path.join(
         UPLOAD_FOLDER,
@@ -363,66 +341,75 @@ def candidate():
 
     resume.save(filepath)
 
-    # --------------------------
-    # READ RESUME
-    # --------------------------
+    # -----------------------------
+    # EXTRACT TEXT
+    # -----------------------------
 
-    resume_text = extract_resume_text(
-        filepath
-    )
+    try:
+        resume_text = extract_resume_text(filepath)
 
-    # --------------------------
+    except Exception as error:
+        return f"Resume processing error: {error}"
+
+    # -----------------------------
+    # DETECT SKILLS
+    # -----------------------------
+
+    found_skills = detect_skills(resume_text)
+
+    # -----------------------------
     # REQUIRED SKILLS
-    # --------------------------
+    # -----------------------------
 
-    required_skills = JOB_SKILLS.get(
+    required_skills = JOB_REQUIREMENTS.get(
         job_role,
         []
     )
 
-    # --------------------------
-    # FIND SKILLS
-    # --------------------------
+    # -----------------------------
+    # MATCH SKILLS
+    # -----------------------------
 
-    found_skills = detect_skills(
-        resume_text,
-        required_skills
-    )
+    matched_skills = []
 
-    # --------------------------
-    # SCORE
-    # --------------------------
+    for skill in required_skills:
 
-    score = calculate_score(
-        found_skills,
-        required_skills
-    )
+        if skill.lower() in [
+            found.lower()
+            for found in found_skills
+        ]:
+            matched_skills.append(skill)
 
-    # --------------------------
+    # -----------------------------
+    # CALCULATE SCORE
+    # -----------------------------
+
+    if len(required_skills) > 0:
+        score = round(
+            (len(matched_skills) / len(required_skills)) * 100
+        )
+    else:
+        score = 0
+
+    # -----------------------------
     # DECISION
-    # --------------------------
+    # -----------------------------
 
     if score >= 60:
-
         decision = "SELECT"
-
     else:
-
         decision = "REJECT"
 
-    # --------------------------
+    # -----------------------------
     # RESULT PAGE
-    # --------------------------
+    # -----------------------------
 
     return render_template(
         "resume_result.html",
 
         name=name,
-
         email=email,
-
         mobile=mobile,
-
         location=location,
 
         job_role=job_role,
@@ -439,32 +426,23 @@ def candidate():
     )
 
 
-# ==================================================
+# =========================================================
 # ADD JOB
-# ==================================================
+# =========================================================
 
-@app.route(
-    "/add-job",
-    methods=["GET", "POST"]
-)
+@app.route("/add-job", methods=["GET", "POST"])
 def add_job():
 
-    # --------------------------
-    # OPEN JOB PAGE
-    # --------------------------
-
     if request.method == "GET":
-
-        return render_template(
-            "add_job.html"
-        )
-
-    # --------------------------
-    # GET FORM DATA
-    # --------------------------
+        return render_template("add_job.html")
 
     job_title = request.form.get(
         "job_title",
+        ""
+    ).strip()
+
+    department = request.form.get(
+        "department",
         ""
     ).strip()
 
@@ -473,111 +451,70 @@ def add_job():
         ""
     ).strip()
 
-    employment_type = request.form.get(
-        "employment_type",
+    job_description = request.form.get(
+        "job_description",
         ""
     ).strip()
 
-    experience = request.form.get(
-        "experience",
-        ""
-    ).strip()
-
-    skills = request.form.get(
-        "skills",
-        ""
-    ).strip()
-
-    description = request.form.get(
-        "description",
-        ""
-    ).strip()
-
-    # --------------------------
-    # SIMPLE VALIDATION
-    # --------------------------
-
-    if not job_title:
-
-        return "Please enter job title."
-
-    if not location:
-
-        return "Please enter location."
-
-    # --------------------------
-    # PRINT JOB
-    # --------------------------
-
-    print("")
-    print("==========================")
-    print("NEW JOB CREATED")
-    print("==========================")
-    print("Job Title:", job_title)
-    print("Location:", location)
-    print("Employment:", employment_type)
-    print("Experience:", experience)
-    print("Skills:", skills)
-    print("Description:", description)
-    print("==========================")
-    print("")
-
-    return redirect(
-        url_for("dashboard")
+    return render_template(
+        "index.html"
     )
 
 
-# ==================================================
+# =========================================================
 # ERROR HANDLERS
-# ==================================================
+# =========================================================
 
 @app.errorhandler(404)
 def page_not_found(error):
-
     return """
     <h1>404 - Page Not Found</h1>
-    <p>Please check the URL.</p>
+    <p>The requested page does not exist.</p>
+    <a href="/">Go to Dashboard</a>
     """, 404
 
 
-@app.errorhandler(500)
-def server_error(error):
-
-    print("SERVER ERROR:", error)
-
+@app.errorhandler(413)
+def file_too_large(error):
     return """
-    <h1>500 - Internal Server Error</h1>
-    <p>Please check the VS Code terminal.</p>
-    """, 500
+    <h1>File Too Large</h1>
+    <p>Please upload a resume smaller than 10 MB.</p>
+    """, 413
 
 
-# ==================================================
-# START APP
-# ==================================================
+# =========================================================
+# START APPLICATION
+# =========================================================
 
 if __name__ == "__main__":
 
-    print("")
-    print("======================================")
-    print("       AI SMART HIRING SYSTEM")
-    print("======================================")
-    print("APP LOCATION:")
+    # Render provides PORT automatically.
+    # Local computer uses 5000.
+
+    port = int(
+        os.environ.get("PORT", 5000)
+    )
+
+    print("=" * 60)
+    print("AI SMART HIRING SYSTEM")
+    print("=" * 60)
+
+    print("App location:")
     print(BASE_DIR)
-    print("")
-    print("TEMPLATE LOCATION:")
+
+    print("Template folder:")
     print(TEMPLATE_FOLDER)
-    print("")
-    print("UPLOAD LOCATION:")
+
+    print("Upload folder:")
     print(UPLOAD_FOLDER)
-    print("")
-    print("======================================")
-    print("OPEN:")
-    print("http://127.0.0.1:5000")
-    print("======================================")
-    print("")
+
+    print("Port:")
+    print(port)
+
+    print("=" * 60)
 
     app.run(
-        host="127.0.0.1",
-        port=5000,
+        host="0.0.0.0",
+        port=port,
         debug=True
     )
