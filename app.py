@@ -1,5 +1,6 @@
 import os
 import re
+import sqlite3
 
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
@@ -11,7 +12,6 @@ from werkzeug.utils import secure_filename
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# If app.py is inside templates folder
 if os.path.basename(BASE_DIR).lower() == "templates":
     PROJECT_DIR = os.path.dirname(BASE_DIR)
     TEMPLATE_FOLDER = BASE_DIR
@@ -19,8 +19,8 @@ else:
     PROJECT_DIR = BASE_DIR
     TEMPLATE_FOLDER = os.path.join(BASE_DIR, "templates")
 
-
 UPLOAD_FOLDER = os.path.join(PROJECT_DIR, "uploads")
+DATABASE = os.path.join(PROJECT_DIR, "hiring.db")
 
 
 # =========================================================
@@ -33,11 +33,58 @@ app = Flask(
 )
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
 
-
-# Create uploads folder
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+# =========================================================
+# DATABASE
+# =========================================================
+
+def get_db():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def init_db():
+
+    conn = get_db()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS jobs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            job_title TEXT NOT NULL,
+            department TEXT,
+            location TEXT,
+            job_description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS candidates (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT,
+            mobile TEXT,
+            location TEXT,
+            job_role TEXT,
+            resume_filename TEXT,
+            score INTEGER,
+            decision TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+init_db()
 
 
 # =========================================================
@@ -48,9 +95,11 @@ ALLOWED_EXTENSIONS = {"pdf", "docx"}
 
 
 def allowed_file(filename):
+
     return (
         "." in filename
-        and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+        and filename.rsplit(".", 1)[1].lower()
+        in ALLOWED_EXTENSIONS
     )
 
 
@@ -59,19 +108,23 @@ def allowed_file(filename):
 # =========================================================
 
 def extract_resume_text(filepath):
+
     extension = filepath.rsplit(".", 1)[1].lower()
 
-    # ---------------- PDF ----------------
+    # PDF
     if extension == "pdf":
+
         try:
             import PyPDF2
 
             text = ""
 
             with open(filepath, "rb") as file:
+
                 reader = PyPDF2.PdfReader(file)
 
                 for page in reader.pages:
+
                     page_text = page.extract_text()
 
                     if page_text:
@@ -80,12 +133,14 @@ def extract_resume_text(filepath):
             return text
 
         except ImportError:
+
             raise Exception(
-                "PyPDF2 is not installed. Run: pip install PyPDF2"
+                "PyPDF2 is not installed."
             )
 
-    # ---------------- DOCX ----------------
+    # DOCX
     elif extension == "docx":
+
         try:
             from docx import Document
 
@@ -94,23 +149,26 @@ def extract_resume_text(filepath):
             text = []
 
             for paragraph in document.paragraphs:
+
                 text.append(paragraph.text)
 
             return "\n".join(text)
 
         except ImportError:
+
             raise Exception(
-                "python-docx is not installed. Run: pip install python-docx"
+                "python-docx is not installed."
             )
 
     return ""
 
 
 # =========================================================
-# SKILL DETECTION
+# SKILLS
 # =========================================================
 
 SKILLS = [
+
     "python",
     "java",
     "javascript",
@@ -138,40 +196,43 @@ SKILLS = [
     "azure",
     "docker",
     "c++",
-    "rest api",
+    "rest api"
 ]
 
 
 def detect_skills(text):
+
     text_lower = text.lower()
 
     found_skills = []
 
     for skill in SKILLS:
 
-        # Special handling for C++
         if skill == "c++":
+
             if "c++" in text_lower:
                 found_skills.append(skill)
+
             continue
 
-        # Special handling for Node.js
         if skill == "node.js":
+
             if "node.js" in text_lower:
                 found_skills.append(skill)
+
             continue
 
-        # Avoid matching partial words
         pattern = r"\b" + re.escape(skill) + r"\b"
 
         if re.search(pattern, text_lower):
+
             found_skills.append(skill)
 
     return found_skills
 
 
 # =========================================================
-# JOB ROLES AND REQUIRED SKILLS
+# JOB REQUIREMENTS
 # =========================================================
 
 JOB_REQUIREMENTS = {
@@ -266,17 +327,59 @@ JOB_REQUIREMENTS = {
         "javascript",
         "react",
         "git"
-    ],
+    ]
 }
 
 
 # =========================================================
-# HOME / DASHBOARD
+# DASHBOARD
 # =========================================================
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+
+    conn = get_db()
+
+    candidate_count = conn.execute(
+        "SELECT COUNT(*) FROM candidates"
+    ).fetchone()[0]
+
+    job_count = conn.execute(
+        "SELECT COUNT(*) FROM jobs"
+    ).fetchone()[0]
+
+    selected_count = conn.execute(
+        "SELECT COUNT(*) FROM candidates WHERE decision = 'SELECT'"
+    ).fetchone()[0]
+
+    analysed_count = conn.execute(
+        "SELECT COUNT(*) FROM candidates WHERE score IS NOT NULL"
+    ).fetchone()[0]
+
+    jobs = conn.execute("""
+        SELECT *
+        FROM jobs
+        ORDER BY id DESC
+    """).fetchall()
+
+    candidates = conn.execute("""
+        SELECT *
+        FROM candidates
+        ORDER BY id DESC
+        LIMIT 10
+    """).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "index.html",
+        candidate_count=candidate_count,
+        job_count=job_count,
+        selected_count=selected_count,
+        analysed_count=analysed_count,
+        jobs=jobs,
+        candidates=candidates
+    )
 
 
 # =========================================================
@@ -289,49 +392,64 @@ def candidate():
     job_roles = list(JOB_REQUIREMENTS.keys())
 
     if request.method == "GET":
+
         return render_template(
             "candidate.html",
             job_roles=job_roles
         )
 
-    # -----------------------------
-    # FORM DATA
-    # -----------------------------
+    name = request.form.get(
+        "name",
+        ""
+    ).strip()
 
-    name = request.form.get("name", "").strip()
-    email = request.form.get("email", "").strip()
-    mobile = request.form.get("mobile", "").strip()
-    location = request.form.get("location", "").strip()
-    job_role = request.form.get("job_role", "").strip()
+    email = request.form.get(
+        "email",
+        ""
+    ).strip()
+
+    mobile = request.form.get(
+        "mobile",
+        ""
+    ).strip()
+
+    location = request.form.get(
+        "location",
+        ""
+    ).strip()
+
+    job_role = request.form.get(
+        "job_role",
+        ""
+    ).strip()
 
     resume = request.files.get("resume")
 
-    # -----------------------------
-    # BASIC VALIDATION
-    # -----------------------------
-
     if not name:
+
         return "Candidate name is required."
 
     if not email:
+
         return "Email is required."
 
     if not job_role:
+
         return "Job role is required."
 
     if not resume:
+
         return "Please upload a resume."
 
     if resume.filename == "":
+
         return "Please select a resume file."
 
     if not allowed_file(resume.filename):
+
         return "Only PDF and DOCX files are allowed."
 
-    # -----------------------------
-    # SAVE RESUME
-    # -----------------------------
-
+    # Save resume
     filename = secure_filename(resume.filename)
 
     filepath = os.path.join(
@@ -341,68 +459,94 @@ def candidate():
 
     resume.save(filepath)
 
-    # -----------------------------
-    # EXTRACT TEXT
-    # -----------------------------
-
+    # Extract resume text
     try:
+
         resume_text = extract_resume_text(filepath)
 
     except Exception as error:
+
         return f"Resume processing error: {error}"
 
-    # -----------------------------
-    # DETECT SKILLS
-    # -----------------------------
+    # Detect skills
+    found_skills = detect_skills(
+        resume_text
+    )
 
-    found_skills = detect_skills(resume_text)
-
-    # -----------------------------
-    # REQUIRED SKILLS
-    # -----------------------------
-
+    # Required skills
     required_skills = JOB_REQUIREMENTS.get(
         job_role,
         []
     )
 
-    # -----------------------------
-    # MATCH SKILLS
-    # -----------------------------
+    # Match skills
+    found_lower = [
+        skill.lower()
+        for skill in found_skills
+    ]
 
     matched_skills = []
 
     for skill in required_skills:
 
-        if skill.lower() in [
-            found.lower()
-            for found in found_skills
-        ]:
+        if skill.lower() in found_lower:
+
             matched_skills.append(skill)
 
-    # -----------------------------
-    # CALCULATE SCORE
-    # -----------------------------
-
+    # Score
     if len(required_skills) > 0:
+
         score = round(
-            (len(matched_skills) / len(required_skills)) * 100
+            (
+                len(matched_skills)
+                /
+                len(required_skills)
+            )
+            * 100
         )
+
     else:
+
         score = 0
 
-    # -----------------------------
-    # DECISION
-    # -----------------------------
-
+    # Decision
     if score >= 60:
+
         decision = "SELECT"
+
     else:
+
         decision = "REJECT"
 
-    # -----------------------------
-    # RESULT PAGE
-    # -----------------------------
+    # Save candidate
+    conn = get_db()
+
+    conn.execute("""
+        INSERT INTO candidates
+        (
+            name,
+            email,
+            mobile,
+            location,
+            job_role,
+            resume_filename,
+            score,
+            decision
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        name,
+        email,
+        mobile,
+        location,
+        job_role,
+        filename,
+        score,
+        decision
+    ))
+
+    conn.commit()
+    conn.close()
 
     return render_template(
         "resume_result.html",
@@ -434,7 +578,10 @@ def candidate():
 def add_job():
 
     if request.method == "GET":
-        return render_template("add_job.html")
+
+        return render_template(
+            "add_job.html"
+        )
 
     job_title = request.form.get(
         "job_title",
@@ -456,9 +603,34 @@ def add_job():
         ""
     ).strip()
 
-    return render_template(
-        "index.html"
-    )
+    if not job_title:
+
+        return "Job title is required."
+
+    # Save job
+    conn = get_db()
+
+    conn.execute("""
+        INSERT INTO jobs
+        (
+            job_title,
+            department,
+            location,
+            job_description
+        )
+        VALUES (?, ?, ?, ?)
+    """, (
+        job_title,
+        department,
+        location,
+        job_description
+    ))
+
+    conn.commit()
+    conn.close()
+
+    # Return dashboard
+    return home()
 
 
 # =========================================================
@@ -467,6 +639,7 @@ def add_job():
 
 @app.errorhandler(404)
 def page_not_found(error):
+
     return """
     <h1>404 - Page Not Found</h1>
     <p>The requested page does not exist.</p>
@@ -476,6 +649,7 @@ def page_not_found(error):
 
 @app.errorhandler(413)
 def file_too_large(error):
+
     return """
     <h1>File Too Large</h1>
     <p>Please upload a resume smaller than 10 MB.</p>
@@ -483,16 +657,16 @@ def file_too_large(error):
 
 
 # =========================================================
-# START APPLICATION
+# RUN APP
 # =========================================================
 
 if __name__ == "__main__":
 
-    # Render provides PORT automatically.
-    # Local computer uses 5000.
-
     port = int(
-        os.environ.get("PORT", 5000)
+        os.environ.get(
+            "PORT",
+            5000
+        )
     )
 
     print("=" * 60)
@@ -504,6 +678,9 @@ if __name__ == "__main__":
 
     print("Template folder:")
     print(TEMPLATE_FOLDER)
+
+    print("Database:")
+    print(DATABASE)
 
     print("Upload folder:")
     print(UPLOAD_FOLDER)
